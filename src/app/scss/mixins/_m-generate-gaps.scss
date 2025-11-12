@@ -1,0 +1,101 @@
+@use "../functions/px-to-rem" as px;
+@use "m-media-queries" as mq;
+
+/* Gap Utilities Mixin
+ * Generates gap, row-gap, and column-gap classes with rem units
+ *
+ * Class Structure:
+ * - General:     .g-10        (gap: 0.625rem)
+ * - Row:         .gr-20       (row-gap: 1.25rem)
+ * - Column:      .gc-30       (column-gap: 1.875rem)
+ * - Responsive:  .g-M-40      (gap: 2.5rem at M breakpoint)
+ *
+  * With !important (-i suffix):
+ * - General:     .g-10-i      (gap: 0.625rem !important)
+ * - Row:         .gr-20-i     (row-gap: 1.25rem !important)
+ * - Column:      .gc-30-i     (column-gap: 1.875rem !important)
+
+ * @example
+ *   <div class="g-20 g-M-40">
+ *     <div>Item 1</div>
+ *     <div>Item 2</div>
+ *   </div>
+ */
+
+
+@mixin gap-utilities($important: null) {
+  // Define sizes in pixels (will be converted to rem)
+  $sizes: (0, 5, 6, 8, 10, 14, 15, 16, 20, 24, 30, 40, 45, 60);
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  
+  @each $size in $sizes {
+    // Base gap classes
+    .g-#{$size}#{$suffix} {
+      gap: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Row gap classes
+    .gr-#{$size}#{$suffix} {
+      row-gap: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Column gap classes
+    .gc-#{$size}#{$suffix} {
+      column-gap: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Responsive variants
+    @each $breakpoint, $value in mq.$breakpoints {
+      @include mq.media-min($breakpoint) {
+        // Responsive base gap
+        body .g-#{$breakpoint}-#{$size}#{$suffix} {
+          gap: px.pxToRem($size)#{$important-flag};
+        }
+        
+        // Responsive row gap
+        body .gr-#{$breakpoint}-#{$size}#{$suffix} {
+          row-gap: px.pxToRem($size)#{$important-flag};
+        }
+        
+        // Responsive column gap
+        body .gc-#{$breakpoint}-#{$size}#{$suffix} {
+          column-gap: px.pxToRem($size)#{$important-flag};
+        }
+      }
+    }
+  }
+}
+
+// Generate gap utilities
+@include gap-utilities;
+@include gap-utilities("true");
+
+/* Examples of generated classes and their values:
+ *
+ * Basic Gap
+ * .g-10  { gap: 0.625rem; }         // 10px
+ * .gr-20 { row-gap: 1.25rem; }      // 20px
+ * .gc-30 { column-gap: 1.875rem; }  // 30px
+ *
+ * Responsive Gap
+ * @media screen and (min-width: 768px) {
+ *   .g-M-40  { gap: 2.5rem; }         // 40px at M breakpoint
+ *   .gr-M-50 { row-gap: 3.125rem; }   // 50px at M breakpoint
+ *   .gc-M-60 { column-gap: 3.75rem; }  // 60px at M breakpoint
+ * }
+
+ * With !important:
+ * .g-10-i  { gap: 0.625rem !important; }
+ * .gr-20-i { row-gap: 1.25rem !important; }
+ * .gc-30-i { column-gap: 1.875rem !important; }
+ *
+ * Usage Example:
+ * <div class="g-20 g-M-40 gr-L-60">
+ *   <!-- Grid/Flex container with:
+ *        - 20px gap on mobile
+ *        - 40px gap at medium breakpoint
+ *        - 60px row gap at large breakpoint
+ *   -->
+ * </div>
+ */

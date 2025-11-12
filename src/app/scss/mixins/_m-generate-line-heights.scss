@@ -1,0 +1,82 @@
+@use "m-media-queries" as mq;
+@use "../functions/px-to-rem" as px;
+
+/* Line Height Generator Mixin
+ * Generates utility classes for line heights from 10px to 50px, converted to rem
+ *
+ * Example HTML:
+ * <div class="lh-16">Text with 1rem line height</div>
+ * <div class="lh-24">Text with 1.5rem line height</div>
+ * <div class="lh-24-M">Text with 1.5rem line height at medium breakpoint and above</div>
+ */
+
+// Configuration variables
+$min-line-height: 10;
+$max-line-height: 50;
+$class-prefix-lh: 'lh';
+
+/* generate-line-heights
+ * Generates a range of line-height utility classes with rem values
+ * Classes are generated in the format: .lh-10 through .lh-50
+ * Responsive classes are generated as .lh-10-M, .lh-10-L, etc.
+ *
+ * Example SCSS:
+ *   @include generate-line-heights;
+ *
+ * Output:
+ *   .lh-10 { line-height: 0.625rem; }
+ *   .lh-11 { line-height: 0.6875rem; }
+ *   ...
+ *   .lh-50 { line-height: 3.125rem; }
+ *   .lh-10-M { @media (min-width: 768px) { line-height: 0.625rem; } }
+ */
+@mixin generate-line-heights($important: null) {
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  
+  @for $i from $min-line-height through $max-line-height {
+    .#{$class-prefix-lh}-#{$i}#{$suffix} {
+      line-height: #{px.pxToRem($i)}#{$important-flag};
+    }
+    
+    @each $breakpoint, $value in mq.$breakpoints {
+      @include mq.media-min($breakpoint) {
+        body .#{$class-prefix-lh}-#{$i}-#{$breakpoint}#{$suffix} {
+          line-height: #{px.pxToRem($i)}#{$important-flag};
+        }
+      }
+    }
+  }
+}
+
+// Apply the mixin to generate all classes
+@include generate-line-heights;
+@include generate-line-heights("true");
+
+/* Examples of generated classes and their values:
+ *
+ * Basic Line Height
+ * .lh-16  { line-height: 1rem; }
+ * .lh-24  { line-height: 1.5rem; }
+ *
+ * Responsive Line Height
+ * @media screen and (min-width: 768px) {
+ *   .lh-16-M  { line-height: 1rem; }
+ *   .lh-24-M  { line-height: 1.5rem; }
+ * }
+ *
+ * With !important:
+ * .lh-16-i  { line-height: 1rem !important; }
+ * .lh-24-i  { line-height: 1.5rem !important; }
+ *
+ * Responsive with !important:
+ * @media screen and (min-width: 768px) {
+ *   .lh-16-M-i  { line-height: 1rem !important; }
+ *   .lh-24-M-i  { line-height: 1.5rem !important; }
+ * }
+ *
+ * Usage Example:
+ * <p class="lh-16 lh-24-M">
+ *   This text has 1rem line height on mobile and 1.5rem from medium breakpoint up.
+ * </p>
+ */

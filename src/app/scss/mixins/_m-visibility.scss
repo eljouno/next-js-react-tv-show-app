@@ -1,0 +1,62 @@
+/**
+ * Accessibility and Visibility Mixins
+ *
+ * This file contains mixins to enhance accessibility and manage visibility
+ * of elements in various scenarios.
+ */
+
+/**
+ * Visually hide or show an element while maintaining accessibility
+ * @param {Boolean} $hide [true] - Whether to hide (true) or show (false) the element
+ * @param {Boolean} $focusable [false] - Whether the element should be focusable when hidden
+ */
+@mixin visually-hidden($hide: true, $focusable: false) {
+  @if $hide {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+    
+    @if $focusable {
+      &:active,
+      &:focus {
+        clip: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        position: static;
+        width: auto;
+        white-space: inherit;
+      }
+    }
+  } @else {
+    border: initial;
+    clip: initial;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    padding: initial;
+    position: static;
+    width: auto;
+    white-space: inherit;
+  }
+}
+
+/**
+ * Hide element visually and from screen readers
+ */
+@mixin hidden {
+  display: none !important;
+}
+
+/**
+ * Hide element visually but maintain layout
+ */
+@mixin invisible {
+  visibility: hidden;
+}

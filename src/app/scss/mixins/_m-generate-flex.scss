@@ -1,0 +1,176 @@
+@use "m-media-queries" as mq;
+
+/* Flex Utilities Mixin - Simple Version
+ * Generates essential flex classes with breakpoints
+ *
+ * Generated classes:
+ * - .flex, .inline-flex
+ * - .flex-row, .flex-col
+ * - .justify-start/center/end/between
+ * - .items-start/center/end/stretch
+ * - .flex-0 to .flex-12
+ * - Responsive versions: .flex-col-M, .justify-center-L, etc.
+ */
+
+@mixin flex-utilities($important: null) {
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  
+  // Display
+  .flex#{$suffix} {
+    display: flex#{$important-flag};
+  }
+  
+  .inline-flex#{$suffix} {
+    display: inline-flex#{$important-flag};
+  }
+  
+  // Flex direction
+  .flex-row#{$suffix} {
+    flex-direction: row#{$important-flag};
+  }
+  
+  .flex-col#{$suffix} {
+    flex-direction: column#{$important-flag};
+  }
+  
+  // Justify content
+  .justify-start#{$suffix} {
+    justify-content: flex-start#{$important-flag};
+  }
+  
+  .justify-center#{$suffix} {
+    justify-content: center#{$important-flag};
+  }
+  
+  .justify-end#{$suffix} {
+    justify-content: flex-end#{$important-flag};
+  }
+  
+  .justify-between#{$suffix} {
+    justify-content: space-between#{$important-flag};
+  }
+  
+  // Align items
+  .items-start#{$suffix} {
+    align-items: flex-start#{$important-flag};
+  }
+  
+  .items-center#{$suffix} {
+    align-items: center#{$important-flag};
+  }
+  
+  .items-end#{$suffix} {
+    align-items: flex-end#{$important-flag};
+  }
+  
+  .items-stretch#{$suffix} {
+    align-items: stretch#{$important-flag};
+  }
+  
+  // Flex values
+  @for $i from 0 through 12 {
+    .flex-#{$i}#{$suffix} {
+      flex: #{$i}#{$important-flag};
+    }
+  }
+  
+  // Responsive variants
+  @each $breakpoint, $value in mq.$breakpoints {
+    @include mq.media-min($breakpoint) {
+      // Display
+      body .flex-#{$breakpoint}#{$suffix} {
+        display: flex#{$important-flag};
+      }
+      
+      body .inline-flex-#{$breakpoint}#{$suffix} {
+        display: inline-flex#{$important-flag};
+      }
+      
+      // Direction
+      body .flex-row-#{$breakpoint}#{$suffix} {
+        flex-direction: row#{$important-flag};
+      }
+      
+      body .flex-col-#{$breakpoint}#{$suffix} {
+        flex-direction: column#{$important-flag};
+      }
+      
+      // Justify
+      body .justify-start-#{$breakpoint}#{$suffix} {
+        justify-content: flex-start#{$important-flag};
+      }
+      
+      body .justify-center-#{$breakpoint}#{$suffix} {
+        justify-content: center#{$important-flag};
+      }
+      
+      body .justify-end-#{$breakpoint}#{$suffix} {
+        justify-content: flex-end#{$important-flag};
+      }
+      
+      body .justify-between-#{$breakpoint}#{$suffix} {
+        justify-content: space-between#{$important-flag};
+      }
+      
+      // Items
+      body .items-start-#{$breakpoint}#{$suffix} {
+        align-items: flex-start#{$important-flag};
+      }
+      
+      body .items-center-#{$breakpoint}#{$suffix} {
+        align-items: center#{$important-flag};
+      }
+      
+      body .items-end-#{$breakpoint}#{$suffix} {
+        align-items: flex-end#{$important-flag};
+      }
+      
+      body .items-stretch-#{$breakpoint}#{$suffix} {
+        align-items: stretch#{$important-flag};
+      }
+      
+      // Flex values
+      @for $i from 0 through 12 {
+        body .flex-#{$i}-#{$breakpoint}#{$suffix} {
+          flex: #{$i}#{$important-flag};
+        }
+      }
+    }
+  }
+}
+
+// Generate flex utilities
+@include flex-utilities;
+@include flex-utilities("true");
+
+/* Examples of generated classes and their values:
+ *
+ * Basic Flex
+ * .flex              { display: flex; }
+ * .flex-col          { flex-direction: column; }
+ * .justify-center    { justify-content: center; }
+ * .items-center      { align-items: center; }
+ * .flex-1            { flex: 1; }
+ *
+ * Responsive (breakpoint at the end):
+ * .flex-col-M        { flex-direction: column; } // at M breakpoint
+ * .justify-center-L  { justify-content: center; } // at L breakpoint
+ * .flex-1-XL         { flex: 1; } // at XL breakpoint
+ *
+ * With !important:
+ * .flex-i            { display: flex !important; }
+ * .flex-col-i        { flex-direction: column !important; }
+ * .justify-center-i  { justify-content: center !important; }
+ *
+ * Usage Examples:
+ * <div class="flex justify-center items-center flex-col-M">
+ *   <div class="flex-1 flex-2-L">Item 1</div>
+ *   <div class="flex-2 flex-1-L">Item 2</div>
+ * </div>
+ *
+ * <div class="flex justify-between items-start-M">
+ *   <div class="flex-auto">Auto width</div>
+ *   <div class="flex-none">Fixed width</div>
+ * </div>
+ */

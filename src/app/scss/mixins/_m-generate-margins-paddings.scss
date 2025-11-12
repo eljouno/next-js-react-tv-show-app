@@ -1,0 +1,141 @@
+@use "../functions/px-to-rem" as px;
+@use "m-media-queries" as mq;
+
+
+/* Spacing Utilities Mixin
+ * Generates margin and padding classes with configurable sizes in rem units
+ *
+ * Class Structure:
+ * - General:        `.cm-10`, `.cp-20`        (0.625rem, 1.25rem)
+ * - Horizontal:     `.cmx-30`, `.cpx-40`      (1.875rem, 2.5rem)
+ * - Vertical:       `.cmy-50`, `.cpy-60`      (3.125rem, 3.75rem)
+ * - Individual:     `.cmt-70`, `.cpb-80`      (4.375rem, 5rem)
+ * - Responsive:     `.cm-M-10`, `.cp-XL-20`   (0.625rem, 1.25rem at breakpoint)
+ *
+ * @param {String} $property - CSS property to generate (margin or padding)
+ * @param {String} $prefix - Prefix for class names ("m" for margin, "p" for padding)
+ * @param {Boolean} $important - Whether to include !important flag (default: false)
+ */
+@mixin spacing-utilities($property, $prefix, $important: null) {
+  // Define sizes in pixels (will be converted to rem)
+  $sizes: (0, 2, 4, 5, 8, 10, 12, 13, 14, 15, 16, 20, 24, 30, 32, 34, 40, 50, 60, 70, 80, 90, 100);
+  
+  // Define important suffix and CSS property modifier
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  
+  @each $size in $sizes {
+    // Base Classes (Default)
+    .c#{$prefix}-#{$size}#{$suffix} {
+      #{$property}: px.pxToRem($size)#{$important-flag};
+    }
+
+    // Vertical Spacing (Top & Bottom)
+    .c#{$prefix}y-#{$size}#{$suffix} {
+      #{$property}-top: px.pxToRem($size)#{$important-flag};
+      #{$property}-bottom: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Horizontal Spacing (Left & Right)
+    .c#{$prefix}x-#{$size}#{$suffix} {
+      #{$property}-left: px.pxToRem($size)#{$important-flag};
+      #{$property}-right: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Individual Sides
+    .c#{$prefix}t-#{$size}#{$suffix} {
+      #{$property}-top: px.pxToRem($size)#{$important-flag};
+    }
+    
+    .c#{$prefix}b-#{$size}#{$suffix} {
+      #{$property}-bottom: px.pxToRem($size)#{$important-flag};
+    }
+    
+    .c#{$prefix}l-#{$size}#{$suffix} {
+      #{$property}-left: px.pxToRem($size)#{$important-flag};
+    }
+    
+    .c#{$prefix}r-#{$size}#{$suffix} {
+      #{$property}-right: px.pxToRem($size)#{$important-flag};
+    }
+    
+    // Responsive Variants
+    @each $breakpoint, $value in mq.$breakpoints {
+      @include mq.media-min($breakpoint) {
+        body .c#{$prefix}-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}y-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-top: px.pxToRem($size)#{$important-flag};
+          #{$property}-bottom: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}x-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-left: px.pxToRem($size)#{$important-flag};
+          #{$property}-right: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}t-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-top: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}b-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-bottom: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}l-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-left: px.pxToRem($size)#{$important-flag};
+        }
+        
+        body .c#{$prefix}r-#{$breakpoint}-#{$size}#{$suffix} {
+          #{$property}-right: px.pxToRem($size)#{$important-flag};
+        }
+      }
+    }
+  }
+}
+
+// Generate margin and padding classes
+@include spacing-utilities(margin, "m");
+@include spacing-utilities(padding, "p");
+
+// Generate important margin and padding classes
+@include spacing-utilities(margin, "m", "true");
+@include spacing-utilities(padding, "p", "true");
+
+
+/* Examples of generated classes and their rem values:
+ *
+ * Base Spacing
+ * .cm-10  { margin: 0.625rem; }     // 10px
+ * .cp-20  { padding: 1.25rem; }     // 20px
+ *
+ * Horizontal and Vertical Spacing
+ * .cmx-30 {
+ *   margin-left: 1.875rem;          // 30px
+ *   margin-right: 1.875rem;         // 30px
+ * }
+ * .cpy-40 {
+ *   padding-top: 2.5rem;            // 40px
+ *   padding-bottom: 2.5rem;         // 40px
+ * }
+ *
+ * Individual Sides
+ * .cmt-15 { margin-top: 0.9375rem; }  // 15px
+ * .cpb-25 { padding-bottom: 1.5625rem; } // 25px
+ *
+ * Responsive Variants
+ * @media screen and (min-width: 768px) {
+ *   .cm-M-10 { margin: 0.625rem; }      // 10px
+ *   .cpy-M-20 {
+ *     padding-top: 1.25rem;              // 20px
+ *     padding-bottom: 1.25rem;           // 20px
+ *   }
+ * }
+ *
+ * Base Spacing (Important): i is always at the end
+ * .cm-10-i  { margin: 0.625rem !important; }     // 10px
+ * .cp-20-i  { padding: 1.25rem !important; }     // 20px
+ *
+ */

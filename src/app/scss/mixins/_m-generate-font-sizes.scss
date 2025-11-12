@@ -1,0 +1,55 @@
+@use "../functions/px-to-rem" as px;
+@use "m-media-queries" as mq;
+
+/* generate-font-sizes
+ * Generates a range of font-size utility classes
+ * Classes are generated in the format: .fs-8 through .fs-50
+ * Classes with -i suffix include !important
+ *
+ * Responsive classes are generated in the format:
+ * .fs-{size}-{breakpoint} (e.g., .fs-24-M)
+ * These apply the font size only at the specified breakpoint and above
+ * Available breakpoints: XS, S, M, L, XL, XXL (defined in $breakpoints map)
+ *
+ * Example SCSS:
+ *   @include generate-font-sizes; // Basic classes
+ *   @include generate-font-sizes("true"); // With !important suffix classes
+ *
+ * Output:
+ *   .fs-8 { font-size: 0.5rem; }
+ *   .fs-9 { font-size: 0.5625rem; }
+ *   .fs-8-M { @media (min-width: 768px) { font-size: 0.5rem; } }
+ *   ...and with !important:
+ *   .fs-8-i { font-size: 0.5rem !important; }
+ *   .fs-8-M-i { @media (min-width: 768px) { font-size: 0.5rem !important; } }
+ */
+
+// Configuration variables
+$min-font-size: 8;
+$max-font-size: 50;
+$class-prefix-fs: 'fs';
+
+@mixin generate-font-sizes($important: null) {
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  // Loop through each size from min to max
+  @for $i from $min-font-size through $max-font-size {
+    // Check if important flag is set and generate appropriate classes
+    
+    .#{$class-prefix-fs}-#{$i}#{$suffix} {
+      font-size: #{px.pxToRem($i)}#{$important-flag};
+    }
+    
+    @each $breakpoint, $value in mq.$breakpoints {
+      @include mq.media-min($breakpoint) {
+        body .#{$class-prefix-fs}-#{$i}-#{$breakpoint}#{$suffix} {
+          font-size: #{px.pxToRem($i)}#{$important-flag};
+        }
+      }
+    }
+  }
+}
+
+// Apply the mixin to generate regular classes
+@include generate-font-sizes;
+@include generate-font-sizes("true");

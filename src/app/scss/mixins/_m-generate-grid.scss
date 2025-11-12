@@ -1,0 +1,452 @@
+@use "sass:math";
+@use "sass:meta";
+@use "../functions/px-to-rem" as px;
+@use "m-media-queries" as mq;
+
+/* Flexbox Grid System
+ * Modern responsive grid system using flexbox for optimal performance and flexibility
+ *
+ * Features:
+ * - 12-column grid system
+ * - Mobile-first responsive design
+ * - Flexible column sizing (fixed, auto, grow/shrink)
+ * - Comprehensive alignment utilities
+ * - Offset and ordering capabilities
+ * - Important variants for all classes
+ *
+ * Class Structure:
+ * - Container:      `.container`, `.container-fluid`
+ * - Layout:         `.row`, `.row.no-gutters`
+ * - Columns:        `.col`, `.col-auto`, `.col-{1-12}`
+ * - Responsive:     `.col-{size}-{breakpoint}` (e.g., `.col-6-M`, `.col-4-L`)
+ * - Flex Utils:     `.flex`, `.justify-center`, `.items-center`
+ * - Offsets:        `.offset-{size}-{breakpoint}`
+ * - Order:          `.order-{0-12}-{breakpoint}`, `.order-first`, `.order-last`
+ * - Grow/Shrink:    `.flex-grow-{0-5}`, `.flex-shrink-{0-5}`
+ * - Important:      All classes available with `-i` suffix
+ *
+ * Available breakpoints: S, XM, M, L, XL, XXL, XXXL
+ *
+ * @param {String|null} $important - Whether to include !important flag ("true" or null)
+ */
+
+@mixin generate-flex-grid($important: null) {
+  // Configuration
+  $grid-columns: 12;
+  $grid-gutter: px.pxToRem(24);
+  $suffix: if($important == "true", "-i", "");
+  $important-flag: if($important == "true", " !important", "");
+  
+  // ==========================================================================
+  // CONTAINER SYSTEM
+  // ==========================================================================
+  
+  .container#{$suffix} {
+    width: 100%#{$important-flag};
+    max-width: 100%#{$important-flag};
+    padding-inline: math.div($grid-gutter, 2)#{$important-flag};
+    margin-inline: auto#{$important-flag};
+    
+    // Responsive max-widths
+    @include mq.media-min(S) {
+      body & { max-width: px.pxToRem(540)#{$important-flag}; }
+    }
+    @include mq.media-min(XM) {
+      body & { max-width: px.pxToRem(720)#{$important-flag}; }
+    }
+    @include mq.media-min(M) {
+      body & { max-width: px.pxToRem(960)#{$important-flag}; }
+    }
+    @include mq.media-min(L) {
+      body & { max-width: px.pxToRem(1140)#{$important-flag}; }
+    }
+    @include mq.media-min(XL) {
+      body & { max-width: px.pxToRem(1320)#{$important-flag}; }
+    }
+    @include mq.media-min(XXL) {
+      body & { max-width: px.pxToRem(1600)#{$important-flag}; }
+    }
+    @include mq.media-min(XXXL) {
+      body & { max-width: px.pxToRem(1800)#{$important-flag}; }
+    }
+  }
+  
+  .container-fluid#{$suffix} {
+    width: 100%#{$important-flag};
+    padding-inline: math.div($grid-gutter, 2)#{$important-flag};
+    margin-inline: auto#{$important-flag};
+  }
+  
+  // ==========================================================================
+  // ROW SYSTEM
+  // ==========================================================================
+  
+  .row#{$suffix} {
+    display: flex#{$important-flag};
+    flex-wrap: wrap#{$important-flag};
+    margin-inline: math.div($grid-gutter, -2)#{$important-flag};
+  }
+  
+  .row.no-gutters#{$suffix} {
+    margin-inline: 0#{$important-flag};
+    
+    > [class*="col"] {
+      padding-inline: 0#{$important-flag};
+    }
+  }
+  
+  // ==========================================================================
+  // COLUMN SYSTEM - BASE (Mobile First)
+  // ==========================================================================
+  
+  // Base column styles
+  %col-base#{$suffix} {
+    position: relative#{$important-flag};
+    width: 100%#{$important-flag};
+    padding-inline: math.div($grid-gutter, 2)#{$important-flag};
+    min-height: 1px#{$important-flag};
+  }
+  
+  // Auto columns
+  .col#{$suffix} {
+    @extend %col-base#{$suffix};
+    flex: 1 0 0%#{$important-flag}; // Equal width, grows
+  }
+  
+  .col-auto#{$suffix} {
+    @extend %col-base#{$suffix};
+    flex: 0 0 auto#{$important-flag}; // Content width, doesn't grow
+    width: auto#{$important-flag};
+  }
+  
+  // Fixed columns (1-12)
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}#{$suffix} {
+      @extend %col-base#{$suffix};
+      flex: 0 0 auto#{$important-flag};
+      width: math.percentage(math.div($i, $grid-columns))#{$important-flag};
+    }
+  }
+  
+  // ==========================================================================
+  // RESPONSIVE COLUMNS (with body prefix)
+  // ==========================================================================
+  
+  @each $breakpoint, $value in mq.$breakpoints {
+    @include mq.media-min($breakpoint) {
+      // Auto columns
+      body .col-#{$breakpoint}#{$suffix} {
+        flex: 1 0 0%#{$important-flag};
+      }
+      
+      body .col-auto-#{$breakpoint}#{$suffix} {
+        flex: 0 0 auto#{$important-flag};
+        width: auto#{$important-flag};
+      }
+      
+      // Fixed columns
+      @for $i from 1 through $grid-columns {
+        body .col-#{$i}-#{$breakpoint}#{$suffix} {
+          flex: 0 0 auto#{$important-flag};
+          width: math.percentage(math.div($i, $grid-columns))#{$important-flag};
+        }
+      }
+      
+      // Offsets
+      @for $i from 0 through ($grid-columns - 1) {
+        body .offset-#{$i}-#{$breakpoint}#{$suffix} {
+          margin-left: if($i == 0, 0, math.percentage(math.div($i, $grid-columns)))#{$important-flag};
+        }
+      }
+      
+      // Order utilities
+      @for $i from 0 through 12 {
+        body .order-#{$i}-#{$breakpoint}#{$suffix} {
+          order: $i#{$important-flag};
+        }
+      }
+      
+      body .order-first-#{$breakpoint}#{$suffix} {
+        order: -1#{$important-flag};
+      }
+      
+      body .order-last-#{$breakpoint}#{$suffix} {
+        order: 13#{$important-flag};
+      }
+      
+      // Flex grow utilities
+      @for $i from 0 through 5 {
+        body .flex-grow-#{$i}-#{$breakpoint}#{$suffix} {
+          flex-grow: $i#{$important-flag};
+        }
+      }
+      
+      // Flex shrink utilities
+      @for $i from 0 through 5 {
+        body .flex-shrink-#{$i}-#{$breakpoint}#{$suffix} {
+          flex-shrink: $i#{$important-flag};
+        }
+      }
+    }
+  }
+  
+  // ==========================================================================
+  // FLEX UTILITIES - BASE (Mobile First)
+  // ==========================================================================
+  
+  // Display
+  .flex#{$suffix} { display: flex#{$important-flag}; }
+  .inline-flex#{$suffix} { display: inline-flex#{$important-flag}; }
+  
+  // Direction
+  .flex-row#{$suffix} { flex-direction: row#{$important-flag}; }
+  .flex-row-reverse#{$suffix} { flex-direction: row-reverse#{$important-flag}; }
+  .flex-col#{$suffix} { flex-direction: column#{$important-flag}; }
+  .flex-col-reverse#{$suffix} { flex-direction: column-reverse#{$important-flag}; }
+  
+  // Wrap
+  .flex-wrap#{$suffix} { flex-wrap: wrap#{$important-flag}; }
+  .flex-nowrap#{$suffix} { flex-wrap: nowrap#{$important-flag}; }
+  .flex-wrap-reverse#{$suffix} { flex-wrap: wrap-reverse#{$important-flag}; }
+  
+  // Justify content (main axis)
+  .justify-start#{$suffix} { justify-content: flex-start#{$important-flag}; }
+  .justify-end#{$suffix} { justify-content: flex-end#{$important-flag}; }
+  .justify-center#{$suffix} { justify-content: center#{$important-flag}; }
+  .justify-between#{$suffix} { justify-content: space-between#{$important-flag}; }
+  .justify-around#{$suffix} { justify-content: space-around#{$important-flag}; }
+  .justify-evenly#{$suffix} { justify-content: space-evenly#{$important-flag}; }
+  
+  // Align items (cross axis)
+  .items-start#{$suffix} { align-items: flex-start#{$important-flag}; }
+  .items-end#{$suffix} { align-items: flex-end#{$important-flag}; }
+  .items-center#{$suffix} { align-items: center#{$important-flag}; }
+  .items-baseline#{$suffix} { align-items: baseline#{$important-flag}; }
+  .items-stretch#{$suffix} { align-items: stretch#{$important-flag}; }
+  
+  // Align content (multiple lines)
+  .content-start#{$suffix} { align-content: flex-start#{$important-flag}; }
+  .content-end#{$suffix} { align-content: flex-end#{$important-flag}; }
+  .content-center#{$suffix} { align-content: center#{$important-flag}; }
+  .content-between#{$suffix} { align-content: space-between#{$important-flag}; }
+  .content-around#{$suffix} { align-content: space-around#{$important-flag}; }
+  .content-stretch#{$suffix} { align-content: stretch#{$important-flag}; }
+  
+  // Flex grow/shrink
+  @for $i from 0 through 5 {
+    .flex-grow-#{$i}#{$suffix} { flex-grow: $i#{$important-flag}; }
+    .flex-shrink-#{$i}#{$suffix} { flex-shrink: $i#{$important-flag}; }
+  }
+  
+  // ==========================================================================
+  // RESPONSIVE FLEX UTILITIES (with body prefix)
+  // ==========================================================================
+  
+  @each $breakpoint, $value in mq.$breakpoints {
+    @include mq.media-min($breakpoint) {
+      // Display
+      body .flex-#{$breakpoint}#{$suffix} { display: flex#{$important-flag}; }
+      body .inline-flex-#{$breakpoint}#{$suffix} { display: inline-flex#{$important-flag}; }
+      
+      // Direction
+      body .flex-row-#{$breakpoint}#{$suffix} { flex-direction: row#{$important-flag}; }
+      body .flex-row-reverse-#{$breakpoint}#{$suffix} { flex-direction: row-reverse#{$important-flag}; }
+      body .flex-col-#{$breakpoint}#{$suffix} { flex-direction: column#{$important-flag}; }
+      body .flex-col-reverse-#{$breakpoint}#{$suffix} { flex-direction: column-reverse#{$important-flag}; }
+      
+      // Wrap
+      body .flex-wrap-#{$breakpoint}#{$suffix} { flex-wrap: wrap#{$important-flag}; }
+      body .flex-nowrap-#{$breakpoint}#{$suffix} { flex-wrap: nowrap#{$important-flag}; }
+      
+      // Justify
+      body .justify-start-#{$breakpoint}#{$suffix} { justify-content: flex-start#{$important-flag}; }
+      body .justify-end-#{$breakpoint}#{$suffix} { justify-content: flex-end#{$important-flag}; }
+      body .justify-center-#{$breakpoint}#{$suffix} { justify-content: center#{$important-flag}; }
+      body .justify-between-#{$breakpoint}#{$suffix} { justify-content: space-between#{$important-flag}; }
+      body .justify-around-#{$breakpoint}#{$suffix} { justify-content: space-around#{$important-flag}; }
+      body .justify-evenly-#{$breakpoint}#{$suffix} { justify-content: space-evenly#{$important-flag}; }
+      
+      // Items
+      body .items-start-#{$breakpoint}#{$suffix} { align-items: flex-start#{$important-flag}; }
+      body .items-end-#{$breakpoint}#{$suffix} { align-items: flex-end#{$important-flag}; }
+      body .items-center-#{$breakpoint}#{$suffix} { align-items: center#{$important-flag}; }
+      body .items-baseline-#{$breakpoint}#{$suffix} { align-items: baseline#{$important-flag}; }
+      body .items-stretch-#{$breakpoint}#{$suffix} { align-items: stretch#{$important-flag}; }
+      
+      // Content
+      body .content-start-#{$breakpoint}#{$suffix} { align-content: flex-start#{$important-flag}; }
+      body .content-end-#{$breakpoint}#{$suffix} { align-content: flex-end#{$important-flag}; }
+      body .content-center-#{$breakpoint}#{$suffix} { align-content: center#{$important-flag}; }
+      body .content-between-#{$breakpoint}#{$suffix} { align-content: space-between#{$important-flag}; }
+      body .content-around-#{$breakpoint}#{$suffix} { align-content: space-around#{$important-flag}; }
+      body .content-stretch-#{$breakpoint}#{$suffix} { align-content: stretch#{$important-flag}; }
+    }
+  }
+}
+
+// Generate grid classes
+@include generate-flex-grid();
+@include generate-flex-grid("true");
+
+/* =============================================================================
+ * USAGE EXAMPLES
+ * =============================================================================
+ *
+ * 1. BASIC GRID LAYOUT
+ * <div class="container">
+ *   <div class="row">
+ *     <div class="col-12 col-6-M col-4-L">Column 1</div>
+ *     <div class="col-12 col-6-M col-4-L">Column 2</div>
+ *     <div class="col-12 col-12-M col-4-L">Column 3</div>
+ *   </div>
+ * </div>
+ *
+ * 2. AUTO-SIZING COLUMNS
+ * <div class="row">
+ *   <div class="col">Equal width</div>
+ *   <div class="col">Equal width</div>
+ *   <div class="col-auto">Content width</div>
+ * </div>
+ *
+ * 3. RESPONSIVE LAYOUT WITH FLEX UTILITIES
+ * <div class="container">
+ *   <div class="row justify-center items-center">
+ *     <div class="col-12 col-8-M flex-grow-1">
+ *       Main content that grows
+ *     </div>
+ *     <div class="col-12 col-4-M flex-shrink-0">
+ *       Sidebar that doesn't shrink
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * 4. COMPLEX LAYOUT WITH OFFSETS AND ORDERING
+ * <div class="row">
+ *   <div class="col-12 col-6-M offset-3-M order-2 order-1-L">
+ *     Centered on tablet, reordered on desktop
+ *   </div>
+ *   <div class="col-12 col-6-M order-1 order-2-L">
+ *     First on mobile, second on desktop
+ *   </div>
+ * </div>
+ *
+ * 5. CARD LAYOUT WITH FLEX UTILITIES
+ * <div class="row">
+ *   <div class="col-12 col-6-M col-4-L">
+ *     <div class="flex flex-col justify-between items-center">
+ *       <h3>Card Title</h3>
+ *       <p class="flex-grow-1">Card content that grows</p>
+ *       <button>Action</button>
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * 6. NAVIGATION LAYOUT
+ * <div class="container-fluid">
+ *   <div class="row justify-between items-center">
+ *     <div class="col-auto">
+ *       <img src="logo.png" alt="Logo">
+ *     </div>
+ *     <div class="col flex justify-center">
+ *       <nav>Navigation items</nav>
+ *     </div>
+ *     <div class="col-auto">
+ *       <button>Login</button>
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * 7. RESPONSIVE HERO SECTION
+ * <div class="container">
+ *   <div class="row justify-center items-center" style="min-height: 100vh;">
+ *     <div class="col-12 col-10-M col-8-L col-6-XL flex flex-col items-center">
+ *       <h1>Hero Title</h1>
+ *       <p>Hero description</p>
+ *       <div class="flex flex-col flex-row-M justify-center items-center">
+ *         <button class="cm-10 cm-r-M-20">Primary Action</button>
+ *         <button>Secondary Action</button>
+ *       </div>
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * 8. DASHBOARD LAYOUT
+ * <div class="container-fluid">
+ *   <!-- Header -->
+ *   <div class="row">
+ *     <div class="col-12">
+ *       <header class="flex justify-between items-center">
+ *         <h1>Dashboard</h1>
+ *         <div>User menu</div>
+ *       </header>
+ *     </div>
+ *   </div>
+ *
+ *   <!-- Main content -->
+ *   <div class="row">
+ *     <!-- Sidebar -->
+ *     <div class="col-12 col-3-L">
+ *       <aside>Sidebar content</aside>
+ *     </div>
+ *
+ *     <!-- Content area -->
+ *     <div class="col-12 col-9-L">
+ *       <main>
+ *         <div class="row">
+ *           <div class="col-12 col-6-M col-4-XL">Widget 1</div>
+ *           <div class="col-12 col-6-M col-4-XL">Widget 2</div>
+ *           <div class="col-12 col-12-M col-4-XL">Widget 3</div>
+ *         </div>
+ *       </main>
+ *     </div>
+ *   </div>
+ * </div>
+ *
+ * =============================================================================
+ * GENERATED CLASSES REFERENCE
+ * =============================================================================
+ *
+ * CONTAINERS:
+ * .container          - Responsive max-width container
+ * .container-fluid    - Full-width container
+ *
+ * LAYOUT:
+ * .row               - Flex container for columns
+ * .row.no-gutters    - Row without gutters
+ *
+ * COLUMNS (Base - Mobile First):
+ * .col               - Equal width, grows to fill space
+ * .col-auto          - Width based on content
+ * .col-1 to .col-12  - Fixed width columns (8.33% to 100%)
+ *
+ * RESPONSIVE COLUMNS (Breakpoint Specific):
+ * .col-{breakpoint}           - Equal width at breakpoint
+ * .col-auto-{breakpoint}      - Auto width at breakpoint
+ * .col-{1-12}-{breakpoint}    - Fixed width at breakpoint
+ *
+ * OFFSETS:
+ * .offset-{0-11}-{breakpoint} - Left margin offset
+ *
+ * ORDERING:
+ * .order-{0-12}-{breakpoint}  - Flex order
+ * .order-first-{breakpoint}   - Order: -1
+ * .order-last-{breakpoint}    - Order: 13
+ *
+ * FLEX UTILITIES (Base):
+ * .flex, .inline-flex                    - Display
+ * .flex-row, .flex-col                   - Direction
+ * .flex-wrap, .flex-nowrap               - Wrap
+ * .justify-start/center/end/between      - Justify content
+ * .items-start/center/end/stretch        - Align items
+ * .content-start/center/end/between      - Align content
+ * .flex-grow-{0-5}, .flex-shrink-{0-5}  - Grow/shrink
+ *
+ * RESPONSIVE FLEX UTILITIES:
+ * All flex utilities available with -{breakpoint} suffix
+ *
+ * IMPORTANT VARIANTS:
+ * All classes available with -i suffix for !important
+ *
+ * BREAKPOINTS:
+ * S: 340px, XM: 576px, M: 768px, L: 990px, XL: 1200px, XXL: 1440px, XXXL: 1900px
+ */

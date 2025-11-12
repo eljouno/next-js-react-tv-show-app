@@ -1,0 +1,34 @@
+@use "../mixins/m-media-queries" as mq;
+@use "../functions/px-to-rem" as ptr;
+
+.main-container {
+  &__max {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    width: 100%;
+    max-width: ptr.pxToRem(1800);
+    padding: ptr.pxToRem(25);
+    margin: 0 auto;
+    background-color: #0a0a0a;
+    color: white;
+  }
+}
+
+.header {
+  flex: 1;
+  
+  &__search {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.tv-details {
+  flex: 2;
+}
+
+.recommandations {
+  flex: 1;
+}

@@ -1,0 +1,147 @@
+@use "sass:map";
+
+/**
+ * Media Queries and Breakpoints Configuration
+ *
+ * This file defines breakpoints and mixins for responsive design.
+ * It provides a flexible system for creating min-width, max-width,
+ * and between-width media queries, as well as orientation-specific queries.
+ *
+ * @author Your Name
+ * @version 1.0
+ */
+
+/**
+ * Breakpoints Configuration
+ * Defines the breakpoint sizes for responsive design
+ *
+ * @type Map
+ */
+$breakpoints: (
+  S: 340px,    // Small devices, smartphones
+  XM: 576px,   // Extra medium devices, large smartphones
+  M: 768px,    // Medium devices, tablets
+  L: 990px,    // Large devices, small laptops
+  XL: 1200px,  // Extra large devices, laptops
+  XXL: 1440px, // Extra extra large devices, large desktops
+  XXXL: 1900px, // Extra extra large devices, large desktops
+);
+
+/**
+ * Maximum breakpoints for max-width queries
+ * These values are 1px less than the min-width breakpoints
+ *
+ * @type Map
+ */
+$breakpoints-max: (
+  S: 339px,
+  XM: 575px,
+  M: 767px,
+  L: 989px,
+  XL: 1199px,
+  XXL: 1439px,
+  XXXL: 1899px
+);
+
+/**
+ * Creates a min-width media query with optional orientation
+ *
+ * @param {String} $breakpoint - Breakpoint name from $breakpoints map
+ * @param {String} $orientation [null] - Optional orientation (landscape, portrait)
+ *
+ * @example
+ *   @include media-min(M) {
+ *     // Styles for screens >= 768px
+ *   }
+ *
+ *   @include media-min(L, 'landscape') {
+ *     // Styles for screens >= 992px in landscape orientation
+ *   }
+ */
+@mixin media-min($breakpoint, $orientation: null) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map.get($breakpoints, $breakpoint);
+    
+    @if $orientation {
+      @media screen and (min-width: $breakpoint-value) and (orientation: #{$orientation}) {
+        @content;
+      }
+    } @else {
+      @media screen and (min-width: $breakpoint-value) {
+        @content;
+      }
+    }
+  } @else {
+    @error 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+
+/**
+ * Creates a max-width media query
+ *
+ * @param {String} $breakpoint - Breakpoint name from $breakpoints-max map
+ *
+ * @example
+ *   @include media-max(M) {
+ *     // Styles for screens <= 767px
+ *   }
+ */
+@mixin media-max($breakpoint) {
+  @if map.has-key($breakpoints-max, $breakpoint) {
+    $breakpoint-value: map.get($breakpoints-max, $breakpoint);
+    
+    @media (max-width: $breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @error 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+
+/**
+ * Creates a media query for screens between two breakpoints
+ *
+ * @param {String} $breakpoint-min - Min-width breakpoint name
+ * @param {String} $breakpoint-max - Max-width breakpoint name
+ *
+ * @example
+ *   @include media-between(M, XL) {
+ *     // Styles for screens between 768px and 1279px
+ *   }
+ */
+@mixin media-between($breakpoint-min, $breakpoint-max) {
+  @if map.has-key($breakpoints, $breakpoint-min) and map.has-key($breakpoints-max, $breakpoint-max) {
+    $min-value: map.get($breakpoints, $breakpoint-min);
+    $max-value: map.get($breakpoints-max, $breakpoint-max);
+    
+    @media (min-width: $min-value) and (max-width: $max-value) {
+      @content;
+    }
+  } @else {
+    @error 'Invalid breakpoint range: #{$breakpoint-min} to #{$breakpoint-max}.';
+  }
+}
+
+/**
+ * Usage Examples:
+ *
+ * .example {
+ *   // Base styles
+ *
+ *   @include media-min(M) {
+ *     // Styles for tablets and up (≥768px)
+ *   }
+ *
+ *   @include media-max(M) {
+ *     // Styles for mobile only (≤767px)
+ *   }
+ *
+ *   @include media-between(M, L) {
+ *     // Styles for tablets only (768px-991px)
+ *   }
+ *
+ *   @include media-min(L, 'landscape') {
+ *     // Styles for landscape orientation on large screens (≥992px)
+ *   }
+ * }
+ */

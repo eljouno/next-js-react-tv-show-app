@@ -1,0 +1,14 @@
+@use "sass:math";
+@use "sass:meta";
+
+$base-font-size: 16 !default;
+
+@function pxToRem($px, $base: $base-font-size) {
+  @if meta.type-of($px) == 'number' and math.unit($px) == 'px' {
+    @return math.div($px, $base) * 1rem;
+  } @else if meta.type-of($px) == 'number' and math.is-unitless($px) {
+    @return math.div($px, $base) * 1rem;
+  } @else {
+    @error 'pxToRem() expects a pixel value as a number, got #{$px} instead.';
+  }
+}

@@ -1,0 +1,38 @@
+/**
+ * Replaces occurrences of a substring within a string.
+ *
+ * This function searches for all occurrences of a given substring within
+ * a string and replaces them with another specified substring.
+ *
+ * @param {String} $string - The main string to perform replacements on.
+ * @param {String} $search - The substring to search for within the main string.
+ * @param {String} $replace [optional] - The string to replace the search string with.
+ *                          Defaults to an empty string if not provided.
+ *
+ * @return {String} The resulting string after all replacements are made.
+ *
+ * @example
+ *   $result: str-replace("Hello World", "World", "SCSS");
+ *   // $result will be "Hello SCSS"
+ *
+ *   $path: str-replace("/images/photo.jpg", ".jpg", ".webp");
+ *   // $path will be "/images/photo.webp"
+ *
+ * @throws Will not throw errors, but will return the original string if $search is not found.
+ *
+ * Note: This function uses recursion to replace all occurrences of the search string.
+ */
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+  
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace +
+      str-replace(
+        str-slice($string, $index + str-length($search)),
+        $search,
+        $replace
+      );
+  }
+  
+  @return $string;
+}

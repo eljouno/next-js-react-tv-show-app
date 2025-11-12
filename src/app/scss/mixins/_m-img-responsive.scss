@@ -1,0 +1,18 @@
+/**
+ * Mixin: img-resp
+ *
+ * Creates a responsive image that scales with its container while maintaining aspect ratio.
+ * This mixin ensures images don't exceed their container's width and adjusts height automatically.
+ *
+ * Usage:
+ *   img {
+ *     @include img-resp;
+ *   }
+ *
+ * Note: This mixin is best used on <img> elements or elements with background images.
+ */
+@mixin img-resp {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
