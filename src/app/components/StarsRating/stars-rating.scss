@@ -1,0 +1,19 @@
+.stars-rating {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  
+  i {
+    &.bi-star-fill {
+      color: #ffd700; // Or pour étoiles pleines
+    }
+    
+    &.bi-star-half {
+      color: #ffd700; // Or pour demi-étoiles
+    }
+    
+    &.bi-star {
+      color: #444; // Gris pour étoiles vides
+    }
+  }
+}

@@ -1,10 +1,16 @@
 "use client"
 
-import { getPopularTVShows, getImageUrl } from "./api/tv-show";
+import { getPopularTVShows, getImageUrl, getTVShowRecommendations } from "./api/tv-show";
 import { useState, useEffect } from "react";
+import {TvShowDetails} from "./components/TvShowDetails/TvShowDetails";
+import {Logo} from "@/app/components/Logo/Logo";
+import logo from "@/app/assets/img/logo.png"
+import { TvShowList } from "./components/TvShowList/TvShowList";
 
 export default function App() {
-  const [currentTVShow, setCurrentTVShow] = useState([]);
+  const [tvShowsList, setTvShowsList] = useState([]);
+  const [selectedShow, setSelectedShow] = useState(null);
+  const [recommendedShows, setRecommendedShows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -12,8 +18,8 @@ export default function App() {
     try {
       setLoading(true);
       const data = await getPopularTVShows();
-      console.log('TV Shows data:', data);
-      setCurrentTVShow(data.results || []);
+      setTvShowsList(data.results || []);
+      setSelectedShow(data.results?.[0] || null);
     } catch (err) {
       console.error('Error fetching TV shows:', err);
       setError(err.message);
@@ -21,15 +27,30 @@ export default function App() {
       setLoading(false);
     }
   };
+  
+  const fetchRecommended = async (tvId) => {
+    try {
+      const data = await getTVShowRecommendations(tvId);
+      setRecommendedShows(data.results || []);
+    } catch (err) {
+      console.error('Error fetching recommendations:', err);
+      setError(err.message);
+    }
+  };
 
   useEffect(() => {
     fetchPopulars();
   }, []);
-
-  // Vérification sécurisée pour le background
+  
+  useEffect(() => {
+    if (selectedShow?.id) {
+      fetchRecommended(selectedShow.id);
+    }
+  }, [selectedShow]);
+  
   const getBackgroundStyle = () => {
-    if (currentTVShow.length > 0 && currentTVShow[0]?.backdrop_path) {
-      return `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("${getImageUrl(currentTVShow[0].backdrop_path, 'w1280')}") no-repeat center/cover`;
+    if (selectedShow?.backdrop_path) {
+      return `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("${getImageUrl(selectedShow.backdrop_path, 'w1280')}") no-repeat center/cover`;
     }
     return 'black';
   };
@@ -40,34 +61,42 @@ export default function App() {
            background: getBackgroundStyle(),
          }}
     >
-      {currentTVShow.length > 0 && currentTVShow[0] && (
-        <div className="header container">
-          <div className="row">
-            <div className="col-4">
-              <div className="cmb-16 cmb-XL-0">
-                <h1>{currentTVShow[0].name}</h1>
+      {tvShowsList.length > 0 && tvShowsList[0] && (
+        <>
+          <div className="header container">
+            <div className="row">
+              <div className="col-12 col-4-L">
+                <div className="cmb-16 cmb-XL-0">
+                  <Logo
+                    img={logo}
+                    title="TV Show choice"
+                    subtitle="Find the TV show you should have choosen"
+                  />
+                </div>
+              </div>
+              <div className="header__search col-12 col-4-XL">
+                <input style={{width: "100%"}} type="text"/>
               </div>
             </div>
-            <div className="header__search col-12 col-4-XL">
-              <input style={{width: "100%"}} type="text"/>
+          </div>
+          <div className="tv-details">
+            {selectedShow && <TvShowDetails tvShow={selectedShow} />}
+          </div>
+          <div className="recommandations">
+            <div className="cmb-16">
+              <h1>Recommandations</h1>
+              <TvShowList onClickItem={setSelectedShow} shows={recommendedShows.slice(1, 15)} />
             </div>
           </div>
-        </div>
+          
+          <div className="most-populars">
+            <div className="cmb-16">
+              <h1>Most popular series</h1>
+              <TvShowList shows={tvShowsList.slice(1, 15)} onClickItem={setSelectedShow} />
+            </div>
+          </div>
+        </>
       )}
-      
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      
-      <div className="tv-details">
-        <div className="cmb-16">
-          <h1>Tv show détails</h1>
-        </div>
-      </div>
-      <div className="recommandations">
-        <div className="cmb-16">
-          <h1>Recommandations</h1>
-        </div>
-      </div>
     </div>
   );
 }

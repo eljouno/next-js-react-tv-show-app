@@ -1,0 +1,8 @@
+@use "../../scss/functions/px-to-rem" as pxr;
+
+.tv-details {
+  &__overview {
+    height: 120px;
+    overflow-y: auto;
+  }
+}

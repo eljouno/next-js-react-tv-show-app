@@ -1,5 +1,5 @@
 
-# 🎮 Next.js Game Application
+# 🎮 Next.js TV show application
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.1-black?logo=next.js)

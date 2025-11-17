@@ -1,0 +1,38 @@
+@use "../../scss/functions/px-to-rem" as pxr;
+
+.tv-show-list {
+  &__card {
+    position: relative;
+    border-radius: pxr.pxToRem(8);
+    overflow: hidden;
+    border: transparent;
+    cursor: pointer;
+    
+    
+    &-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0,0,0,0.5);
+      
+      & > * {
+        color: white;
+        text-align: center;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 100%;
+      }
+    }
+  }
+  
+  .swiper-button-prev, .swiper-button-next {
+    width: pxr.pxToRem(30);
+    height: pxr.pxToRem(30);
+    color: white;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: pxr.pxToRem(50);
+    padding: pxr.pxToRem(5);
+  }
+}

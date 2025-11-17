@@ -1,0 +1,18 @@
+@use "../../scss/functions/px-to-rem" as pxr;
+
+.logo {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: pxr.pxToRem(10);
+    
+  }
+  
+  &__title {
+    font-weight: bold;
+  }
+  
+  &__subtitle {
+    font-weight: 700;
+  }
+}
