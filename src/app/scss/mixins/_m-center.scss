@@ -1,3 +1,7 @@
+@use "sass:list";
+@use "sass:meta";
+
+
 /**
  * Mixin center: Centers an element inside its relatively positioned parent
  * @param {String} $direction [xy] - Centering direction: 'x', 'y', or 'xy'
@@ -11,16 +15,16 @@
   @if $direction == xy or $direction == x {
     left: 50%;
     right: auto;
-    $transform: append($transform, translateX(-50%));
+    $transform: list.append($transform, translateX(-50%));
   }
   
   @if $direction == xy or $direction == y {
     top: 50%;
     bottom: auto;
-    $transform: append($transform, translateY(-50%));
+    $transform: list.append($transform, translateY(-50%));
   }
   
-  @if length($transform) > 0 {
+  @if list.length($transform) > 0 {
     @if $use3d {
       transform: translate3d(
           if($direction == xy or $direction == x, -50%, 0),

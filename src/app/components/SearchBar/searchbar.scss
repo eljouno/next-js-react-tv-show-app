@@ -1,0 +1,19 @@
+@use "../../scss/mixins/m-center" as center;
+@use "../../scss/functions/px-to-rem" as pxr;
+
+.search-bar {
+  position: relative;
+  width: 100%;
+  
+  &__icon {
+    @include center.center(y);
+    right: pxr.pxToRem(10);
+    z-index: 1;
+    color: #0a0a0a;
+  }
+  
+  &__input {
+    display: flex;
+    width: 100%;
+  }
+}

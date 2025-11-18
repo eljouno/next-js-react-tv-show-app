@@ -6,6 +6,7 @@ import {TvShowDetails} from "./components/TvShowDetails/TvShowDetails";
 import {Logo} from "@/app/components/Logo/Logo";
 import logo from "@/app/assets/img/logo.png"
 import { TvShowList } from "./components/TvShowList/TvShowList";
+import { SearchBar } from "./components/SearchBar/SearchBar"
 
 export default function App() {
   const [tvShowsList, setTvShowsList] = useState([]);
@@ -75,7 +76,7 @@ export default function App() {
                 </div>
               </div>
               <div className="header__search col-12 col-4-XL">
-                <input style={{width: "100%"}} type="text"/>
+                <SearchBar />
               </div>
             </div>
           </div>
